@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Plan - Sort Your Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#D6266E;
+    --forest-2:#AD1958;
+    --marigold:#FFD23F;
+    --marigold-dark:#D9A400;
+    --mint:#4CAF50;
+    --mint-dark:#2E7D32;
+    --coral:#FF5C93;
+    --coral-dark:#D93E75;
+    --paper:#FBF5EE;
+    --card:#FFFFFF;
+    --ink:#1B2420;
+    --slate:#727C77;
+    --slate-light:#AEB6B0;
+    --line:#E4E1D8;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:linear-gradient(180deg,#2B0A1E 0%,#4A0F30 55%,#2B0A1E 100%);
+    min-height:100vh;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:32px 12px;
+  }
+  .display{font-family:'Baloo 2',sans-serif;font-weight:700;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  .phone{
+    width:390px;max-width:100%;height:820px;background:var(--paper);
+    border-radius:40px;border:10px solid #240816;
+    box-shadow:0 30px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+    position:relative;overflow:hidden;display:flex;flex-direction:column;
+  }
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:22px;background:#240816;border-radius:0 0 16px 16px;z-index:50;}
+  .statusbar{height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:12px;font-weight:700;background:var(--paper);}
+  .screens{flex:1;position:relative;overflow:hidden;}
+  .screen{position:absolute;inset:0;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;display:none;flex-direction:column;background:var(--paper);animation:fadeIn .28s ease;}
+  .screen::-webkit-scrollbar{display:none;}
+  .screen.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+  .pad{padding:20px 20px 100px;}
+  .pad-nonav{padding:20px 20px 32px;}
+  .row{display:flex;align-items:center;}
+  .between{justify-content:space-between;}
+  .gap8{gap:8px;} .gap10{gap:10px;} .gap12{gap:12px;} .gap16{gap:16px;}
+  .muted{color:var(--slate);}
+  .small{font-size:12.5px;}
+  .btn{border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:transform .15s ease, filter .15s ease, opacity .15s ease;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .btn:active{transform:scale(0.97);}
+  .btn:disabled{opacity:0.7;cursor:not-allowed;transform:none;}
+  .btn-primary{background:var(--forest);color:#fff;padding:15px;font-size:15px;width:100%;box-shadow:0 10px 20px rgba(214,38,110,0.28);}
+  .btn-marigold{background:var(--marigold);color:#2A1B00;padding:15px;font-size:15px;width:100%;box-shadow:0 10px 20px rgba(255,177,0,0.32);}
+  .btn-outline{background:transparent;border:1.5px solid var(--line);color:var(--ink);padding:13px;font-size:14px;width:100%;}
+  .btn-ghost{background:transparent;color:var(--slate);font-size:13px;font-weight:600;padding:6px;}
+  .btn-danger{background:var(--coral-dark);color:#fff;padding:14px;font-size:14px;width:100%;}
+  .back-btn{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;}
+  .topbar{display:flex;align-items:center;gap:12px;padding:18px 20px 4px;}
+  .topbar h2{margin:0;font-size:19px;font-family:'Baloo 2',sans-serif;}
+  .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--line);}
+  .chip{display:inline-flex;align-items:center;gap:5px;background:#E7F6E8;color:var(--mint-dark);font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:20px;}
+  .chip.urgent{background:#FDE1EA;color:var(--coral-dark);}
+  .chip.plain{background:#fff;border:1px solid var(--line);color:var(--slate);}
+  input,select,textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;background:#fff;color:var(--ink);}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--forest);outline-offset:1px;}
+  input.field-error,textarea.field-error{border-color:var(--coral-dark);outline:none;}
+  label.field-label{font-size:12px;font-weight:700;color:var(--slate);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:0.4px;}
+  .field-group{margin-bottom:16px;}
+  .error-text{display:none;align-items:center;gap:5px;color:var(--coral-dark);font-size:12px;font-weight:600;margin-top:6px;}
+  .error-text.show{display:flex;}
+  .helper-text{font-size:12px;color:var(--slate);margin-top:6px;}
+
+  .bottomnav{position:absolute;left:0;right:0;bottom:0;height:74px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;border-radius:0 0 30px 30px;z-index:40;}
+  .navitem{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--slate-light);font-size:10.5px;font-weight:700;}
+  .navitem .ic{font-size:19px;}
+  .navitem.active{color:var(--forest);}
+
+  /* Splash */
+  .splash{background:radial-gradient(circle at 30% 20%, #4A0F30 0%, #2B0A1E 70%);color:#fff;align-items:center;justify-content:center;text-align:center;}
+  .splash .display{font-size:48px;color:var(--marigold);}
+  .check-orbit{display:flex;align-items:center;gap:10px;margin:20px 0;}
+  .check-dot{width:10px;height:10px;border-radius:3px;background:var(--mint);}
+  .check-dot:nth-child(2){background:var(--marigold);}
+  .check-dot:nth-child(3){background:var(--coral);}
+
+  /* Auth */
+  .auth-hero{height:170px;background:linear-gradient(135deg,var(--forest) 0%,var(--forest-2) 100%);border-radius:0 0 32px 32px;position:relative;overflow:hidden;flex-shrink:0;}
+  .auth-hero-content{position:relative;z-index:2;padding:26px 24px;color:#fff;}
+  .auth-body{padding:22px 24px 30px;}
+
+  /* Home */
+  .hero-top{background:linear-gradient(135deg,var(--forest) 0%,var(--forest-2) 100%);border-radius:0 0 30px 30px;padding:20px 20px 30px;color:#fff;}
+  .progress-wrap{display:flex;align-items:center;gap:16px;margin-top:16px;}
+  .ring{width:74px;height:74px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--marigold) 0% 0%, rgba(255,255,255,0.15) 0% 100%);}
+  .ring-inner{width:58px;height:58px;border-radius:50%;background:var(--forest-2);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;}
+
+  .filter-strip{display:flex;gap:8px;overflow-x:auto;padding:14px 20px 4px;flex-shrink:0;}
+  .filter-chip{flex-shrink:0;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;background:#fff;border:1px solid var(--line);color:var(--slate);cursor:pointer;}
+  .filter-chip.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+
+  .section-title{font-weight:800;margin:18px 0 10px;color:var(--slate);text-transform:uppercase;letter-spacing:0.4px;font-size:12px;}
+  .task-list{display:flex;flex-direction:column;gap:10px;}
+  .task-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+  .task-item.done{opacity:0.55;}
+  .task-item.done .task-title{text-decoration:line-through;}
+  .checkbox{
+    width:23px;height:23px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;cursor:pointer;background:#fff;
+  }
+  .checkbox.checked{background:var(--mint);border-color:var(--mint-dark);}
+  .task-title{font-weight:700;font-size:14px;}
+  .task-meta{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center;}
+  .tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:8px;}
+  .tag.work{background:#E7F6E8;color:var(--mint-dark);}
+  .tag.study{background:#FCE4EE;color:var(--forest);}
+  .tag.personal{background:#FFF6D8;color:var(--marigold-dark);}
+  .fab{
+    position:absolute;right:20px;bottom:94px;width:56px;height:56px;border-radius:18px;
+    background:var(--marigold);color:#2A1B00;font-size:26px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 14px 26px rgba(255,177,0,0.4);cursor:pointer;z-index:45;border:none;
+  }
+
+  /* Empty state */
+  .empty-state{text-align:center;padding:44px 24px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .empty-state .ic{font-size:40px;margin-bottom:6px;}
+  .empty-state .title{font-weight:800;font-size:15px;font-family:'Baloo 2',sans-serif;}
+  .empty-state .sub{font-size:12.5px;color:var(--slate);max-width:230px;line-height:1.5;}
+  .empty-state .btn{margin-top:12px;width:auto;padding:10px 20px;font-size:13px;}
+
+  /* Add task */
+  .priority-row{display:flex;gap:8px;}
+  .priority-btn{flex:1;text-align:center;padding:11px 6px;border-radius:12px;border:1.5px solid var(--line);font-size:12.5px;font-weight:700;color:var(--slate);cursor:pointer;background:#fff;}
+  .priority-btn.sel-low{background:#E7F6E8;border-color:var(--mint);color:var(--mint-dark);}
+  .priority-btn.sel-mid{background:#FFF6D8;border-color:var(--marigold);color:var(--marigold-dark);}
+  .priority-btn.sel-high{background:#FDE1EA;border-color:var(--coral);color:var(--coral-dark);}
+
+  .cat-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .cat-pick{padding:9px 14px;border-radius:12px;border:1.5px solid var(--line);font-size:12.5px;font-weight:700;cursor:pointer;background:#fff;color:var(--slate);}
+  .cat-pick.active{border-color:var(--forest);background:#FCE4EE;color:var(--forest);}
+
+  .sticky-bottom{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:14px 20px 20px;margin:0 -20px;}
+
+  /* Categories */
+  .cat-card{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;}
+  .cat-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+
+  /* Stats */
+  .streak-card{background:linear-gradient(135deg,var(--forest) 0%,var(--forest-2) 100%);color:#fff;border-radius:18px;padding:18px;}
+  .stat-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center;}
+
+  /* Profile Menu Item Styles */
+  .avatar{width:64px;height:64px;border-radius:50%;background:var(--marigold);color:#2A1B00;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;font-family:'Baloo 2',sans-serif;}
+  .menu-row{display:flex;align-items:center;gap:14px;padding:14px 4px;border-bottom:1px solid var(--line);cursor:pointer;transition:background 0.2s ease;}
+  .menu-row:hover{background-color:rgba(0,0,0,0.02);}
+  .menu-row:last-child{border-bottom:none;}
+  .menu-ic{width:36px;height:36px;border-radius:10px;background:#F1EEE4;display:flex;align-items:center;justify-content:center;font-size:16px;}
+
+  /* Toggle Switch */
+  .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink:0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 24px; }
+  .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+  input:checked + .slider { background-color: var(--forest); }
+  input:checked + .slider:before { transform: translateX(20px); }
+
+  /* Toast (Notifications) */
+  .toast{position:absolute;left:20px;right:20px;bottom:96px;background:var(--ink);color:#fff;padding:13px 16px;border-radius:14px;font-size:13px;font-weight:600;z-index:80;box-shadow:0 12px 24px rgba(0,0,0,0.3);display:none;align-items:center;gap:8px;}
+  .toast.show{display:flex;animation:fadeIn .25s ease;}
+  .toast.toast-error{background:var(--coral-dark);}
+
+  /* Spinner (Transitional text) */
+  .spinner{width:16px;height:16px;border-radius:50%;border:2.5px solid rgba(255,255,255,0.4);border-top-color:#fff;animation:spin .7s linear infinite;flex-shrink:0;}
+  .spinner.dark{border:2.5px solid rgba(27,36,32,0.25);border-top-color:var(--ink);}
+  .loading-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;}
+  .loading-screen .spinner{width:30px;height:30px;border-width:3.5px;}
+
+  /* Confirmation Modal */
+  .modal-overlay{position:absolute;inset:0;background:rgba(27,36,32,0.5);z-index:90;display:none;align-items:flex-end;justify-content:center;}
+  .modal-overlay.show{display:flex;animation:fadeIn .2s ease;}
+  .modal-sheet{background:#fff;width:100%;border-radius:24px 24px 0 0;padding:22px 22px 26px;}
+  .modal-sheet .ic{font-size:30px;margin-bottom:8px;}
+  .modal-sheet .title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:17px;margin-bottom:6px;}
+  .modal-sheet .desc{font-size:13.5px;color:var(--slate);line-height:1.5;margin-bottom:18px;}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="statusbar"><span>9:41</span><span>DAILY PLAN</span><span>🔋100%</span></div>
+
+  <div class="screens" id="screens">
+
+    <!-- SPLASH -->
+    <div class="screen active splash" id="s-splash">
+      <div class="pad-nonav" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div class="display">Daily Plan</div>
+        <div class="small" style="color:#BFD8CC;letter-spacing:2px;margin-top:4px;">SORT YOUR DAY, ONE TASK AT A TIME</div>
+        <div class="check-orbit"><span class="check-dot"></span><span class="check-dot"></span><span class="check-dot"></span></div>
+        <p class="small" style="color:#BFD8CC;text-align:center;max-width:250px;line-height:1.6;">
+          Capture your to-dos, set what matters most, and enjoy the feeling of a clear list.
+        </p>
+      </div>
+      <div class="pad-nonav" style="padding-top:0;">
+        <button class="btn btn-marigold" onclick="showScreen('s-login')">Get Started</button>
+        <button class="btn btn-ghost" style="color:#BFD8CC;width:100%;margin-top:8px;" onclick="showScreen('s-register')">New here? Create an account</button>
+      </div>
+    </div>
+
+    <!-- LOADING (Transitional text) -->
+    <div class="screen splash" id="s-loading">
+      <div class="loading-screen">
+        <div class="spinner"></div>
+        <div id="loading-text" style="font-weight:700;">Signing you in...</div>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="screen" id="s-login">
+      <div class="auth-hero">
+        <div class="auth-hero-content">
+          <div class="back-btn" style="background:rgba(255,255,255,0.15);border:none;color:#fff;" onclick="showScreen('s-splash')">←</div>
+          <h1 class="display" style="font-size:30px;margin:18px 0 4px;">Welcome back 👋</h1>
+          <div class="small" style="color:#BFD8CC;">Log in to pick up where you left off.</div>
+        </div>
+      </div>
+      <div class="auth-body">
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="text" id="login-email" placeholder="you@email.com">
+          <div class="error-text" id="err-login-email">⚠ Enter your email to continue</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password">
+          <div class="error-text" id="err-login-password">⚠ Enter your password to continue</div>
+        </div>
+        <div class="row between" style="margin:6px 0 20px;">
+          <span class="small muted">Forgot your password?</span>
+          <span class="small" style="color:var(--mint-dark);font-weight:700;cursor:pointer;" onclick="toast('Password reset isn\'t available in this preview')">Reset it</span>
+        </div>
+        <button class="btn btn-primary" id="btn-login" onclick="handleLogin()">Log In</button>
+        <button class="btn btn-outline" style="margin-top:10px;" onclick="showScreen('s-register')">Create New Account</button>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="screen" id="s-register">
+      <div class="auth-hero" style="height:110px;">
+        <div class="auth-hero-content">
+          <div class="back-btn" style="background:rgba(255,255,255,0.15);border:none;color:#fff;" onclick="showScreen('s-login')">←</div>
+          <h1 class="display" style="font-size:26px;margin:14px 0 0;">Create your account 📝</h1>
+        </div>
+      </div>
+      <div class="auth-body">
+        <div class="field-group">
+          <label class="field-label">Full Name</label>
+          <input type="text" id="reg-name" placeholder="e.g. Cipa Aulia">
+          <div class="error-text" id="err-reg-name">⚠ Tell us what to call you</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="text" id="reg-email" placeholder="you@email.com">
+          <div class="error-text" id="err-reg-email">⚠ Enter a valid email address</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <input type="password" id="reg-password" placeholder="At least 6 characters">
+          <div class="error-text" id="err-reg-password">⚠ Password must be at least 6 characters</div>
+        </div>
+        <button class="btn btn-primary" id="btn-register" onclick="handleRegister()">Sign Up</button>
+      </div>
+    </div>
+
+    <!-- HOME / TASK LIST -->
+    <div class="screen" id="s-home">
+      <div class="hero-top">
+        <div class="row between">
+          <div>
+            <div class="small" style="color:#BFD8CC;">Monday, July 20, 2026</div>
+            <div class="display" style="font-size:22px;">Hi, <span id="greet-name">there</span> ✨</div>
+          </div>
+          <div class="back-btn" style="background:rgba(255,255,255,0.15);border:none;color:#fff;" onclick="showScreen('s-profile')">👤</div>
+        </div>
+        <div class="progress-wrap">
+          <div class="ring" id="progress-ring"><div class="ring-inner" id="progress-text">0%</div></div>
+          <div>
+            <div style="font-weight:700;font-size:14px;" id="progress-status">0 of 0 tasks done</div>
+            <div class="small" style="color:#BFD8CC;">Almost there, keep going!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER STRIP (Controls) -->
+      <div class="filter-strip">
+        <div class="filter-chip active" onclick="filterTasks('All', this)">All</div>
+        <div class="filter-chip" onclick="filterTasks('Work', this)">Work</div>
+        <div class="filter-chip" onclick="filterTasks('Study', this)">Study</div>
+        <div class="filter-chip" onclick="filterTasks('Personal', this)">Personal</div>
+      </div>
+
+      <div class="pad" style="padding-top:6px;flex:1;">
+        <div class="section-title">Your Tasks</div>
+        <div class="task-list" id="main-task-container">
+          <!-- Tasks render here via JavaScript -->
+        </div>
+      </div>
+
+      <button class="fab" onclick="showScreen('s-addtask')" aria-label="Add a new task">+</button>
+      <div class="bottomnav" id="nav-home"></div>
+    </div>
+
+    <!-- ADD TASK -->
+    <div class="screen" id="s-addtask">
+      <div class="topbar">
+        <div class="back-btn" onclick="showScreen('s-home')">←</div>
+        <h2>New Task</h2>
+      </div>
+      <div class="pad-nonav" style="flex:1;">
+        <div class="field-group">
+          <label class="field-label">Task Title</label>
+          <input type="text" id="input-task-title" placeholder="e.g. Finish the final report">
+          <div class="error-text" id="err-task-title">⚠ Give your task a title so you can find it later</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Notes (optional)</label>
+          <textarea rows="3" id="input-task-desc" placeholder="Add any details worth remembering..."></textarea>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Category</label>
+          <div class="cat-row">
+            <div class="cat-pick active" onclick="selectCategory(this, 'Study')">📘 Study</div>
+            <div class="cat-pick" onclick="selectCategory(this, 'Work')">💼 Work</div>
+            <div class="cat-pick" onclick="selectCategory(this, 'Personal')">🌱 Personal</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Priority</label>
+          <div class="priority-row">
+            <div class="priority-btn sel-low" onclick="selectPriority(this, '🟢 Low')">🟢 Low</div>
+            <div class="priority-btn" onclick="selectPriority(this, '🟡 Medium')">🟡 Medium</div>
+            <div class="priority-btn" onclick="selectPriority(this, '🔴 High')">🔴 High</div>
+          </div>
+        </div>
+
+        <div class="row gap12">
+          <div style="flex:1;" class="field-group">
+            <label class="field-label">Due Date</label>
+            <input type="date" id="input-task-date" value="2026-07-23">
+            <div class="error-text" id="err-task-date">⚠ Pick a due date for this task</div>
+          </div>
+          <div style="flex:1;" class="field-group">
+            <label class="field-label">Time</label>
+            <input type="time" id="input-task-time" value="18:00">
+          </div>
+        </div>
+      </div>
+      <div class="sticky-bottom">
+        <button class="btn btn-primary" id="btn-save-task" onclick="addNewTask()">Save Task</button>
+      </div>
+    </div>
+
+    <!-- TASK DETAIL -->
+    <div class="screen" id="s-taskdetail">
+      <div class="topbar">
+        <div class="back-btn" onclick="showScreen('s-home')">←</div>
+        <h2>Task Details</h2>
+      </div>
+      <div class="pad-nonav" style="flex:1;">
+        <div class="row gap10" style="margin-bottom:6px;">
+          <span class="tag" id="detail-tag">Study</span>
+          <span class="chip" id="detail-priority">🔴 High priority</span>
+        </div>
+        <div class="display" id="detail-title" style="font-size:20px;margin-bottom:6px;">-</div>
+        <div class="small muted" id="detail-date">⏰ Due: -</div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="small muted" style="margin-bottom:6px;">Notes</div>
+          <div class="small" id="detail-desc">-</div>
+        </div>
+      </div>
+      <div class="sticky-bottom">
+        <button class="btn btn-primary" id="btn-complete-task" onclick="completeCurrentTask()">Mark as Complete</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:6px;color:var(--coral-dark);" onclick="askDeleteTask()">Delete Task</button>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="screen" id="s-categories">
+      <div class="topbar"><h2>Categories</h2></div>
+      <div class="pad">
+        <div class="cat-card" onclick="openCategoryFilter('Work')">
+          <div class="cat-ic" style="background:#E7F6E8;">💼</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:14.5px;">Work</div>
+            <div class="small muted" id="count-work">0 active tasks</div>
+          </div>
+          <span class="muted">›</span>
+        </div>
+        <div class="cat-card" onclick="openCategoryFilter('Study')">
+          <div class="cat-ic" style="background:#FCE4EE;">📘</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:14.5px;">Study</div>
+            <div class="small muted" id="count-study">0 active tasks</div>
+          </div>
+          <span class="muted">›</span>
+        </div>
+        <div class="cat-card" onclick="openCategoryFilter('Personal')">
+          <div class="cat-ic" style="background:#FFF6D8;">🌱</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:14.5px;">Personal</div>
+            <div class="small muted" id="count-personal">0 active tasks</div>
+          </div>
+          <span class="muted">›</span>
+        </div>
+      </div>
+      <div class="bottomnav" id="nav-categories"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="screen" id="s-stats">
+      <div class="topbar"><h2>Statistics</h2></div>
+      <div class="pad">
+        <div class="streak-card">
+          <div class="small" style="opacity:0.75;">Current Streak</div>
+          <div class="display" style="font-size:30px;">🔥 0 Days</div>
+          <div class="small" style="margin-top:4px;">Complete a task today to start your streak!</div>
+        </div>
+
+        <div class="row gap12" style="margin-top:16px;">
+          <div class="stat-card" style="flex:1;">
+            <div class="display" style="font-size:22px;color:var(--mint-dark);" id="stat-completed">0</div>
+            <div class="small muted">Completed</div>
+          </div>
+          <div class="stat-card" style="flex:1;">
+            <div class="display" style="font-size:22px;color:var(--coral-dark);" id="stat-pending">0</div>
+            <div class="small muted">Still Pending</div>
+          </div>
+        </div>
+      </div>
+      <div class="bottomnav" id="nav-stats"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="screen" id="s-profile">
+      <div class="pad" style="padding-top:26px;">
+        <div class="row gap16">
+          <div class="avatar" id="profile-avatar">?</div>
+          <div>
+            <div style="font-weight:800;font-size:17px;" id="profile-name">Guest</div>
+            <div class="small muted" id="profile-email">Not signed in yet</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;padding:6px 16px;">
+          <div class="menu-row" onclick="showScreen('s-home')">
+            <div class="menu-ic">🏠</div>
+            <div style="flex:1; font-weight:700; font-size:14px;">My Tasks</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="showScreen('s-categories')">
+            <div class="menu-ic">🗂️</div>
+            <div style="flex:1; font-weight:700; font-size:14px;">Categories</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="showScreen('s-stats')">
+            <div class="menu-ic">📊</div>
+            <div style="flex:1; font-weight:700; font-size:14px;">Statistics</div>
+            <span class="muted">›</span>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;padding:6px 16px;">
+          <div class="menu-row" onclick="showScreen('s-notifications')">
+            <div class="menu-ic">🔔</div>
+            <div style="flex:1; font-weight:700; font-size:14px;">Notifications & Reminders</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="showScreen('s-settings')">
+            <div class="menu-ic">⚙️</div>
+            <div style="flex:1; font-weight:700; font-size:14px;">Settings</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="askLogout()">
+            <div class="menu-ic">🚪</div>
+            <div style="flex:1; font-weight:700; font-size:14px; color:var(--coral-dark);">Log Out</div>
+            <span class="muted">›</span>
+          </div>
+        </div>
+      </div>
+      <div class="bottomnav" id="nav-profile"></div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="screen" id="s-notifications">
+      <div class="topbar">
+        <div class="back-btn" onclick="showScreen('s-profile')">←</div>
+        <h2>Notifications & Reminders</h2>
+      </div>
+      <div class="pad-nonav" style="flex:1;">
+        <p class="small muted" style="margin:10px 0 4px;">Choose what Daily Plan can notify you about.</p>
+
+        <div class="section-title" style="margin-top:16px;">General</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="row between" style="padding:12px 0; border-bottom:1px solid var(--line);">
+            <div style="flex:1;margin-right:12px;">
+              <div style="font-size:14px; font-weight:700;">Task Reminders</div>
+              <div class="small muted">Get a nudge before a task is due</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked onchange="toggleReminder(this, 'Task reminders')">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="row between" style="padding:12px 0; border-bottom:1px solid var(--line);">
+            <div style="flex:1;margin-right:12px;">
+              <div style="font-size:14px; font-weight:700;">Deadline Alerts</div>
+              <div class="small muted">Extra alert when a high-priority task is due today</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked onchange="toggleReminder(this, 'Deadline alerts')">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="row between" style="padding:12px 0; border-bottom:1px solid var(--line);">
+            <div style="flex:1;margin-right:12px;">
+              <div style="font-size:14px; font-weight:700;">Daily Summary</div>
+              <div class="small muted">A short recap of today's progress every evening</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" onchange="toggleReminder(this, 'Daily summary')">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="row between" style="padding:12px 0;">
+            <div style="flex:1;margin-right:12px;">
+              <div style="font-size:14px; font-weight:700;">Weekly Report</div>
+              <div class="small muted">See how your week went every Sunday</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" onchange="toggleReminder(this, 'Weekly report')">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-title">Alert Style</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="row between" style="padding:12px 0; border-bottom:1px solid var(--line);">
+            <div style="flex:1;margin-right:12px;">
+              <div style="font-size:14px; font-weight:700;">Sound</div>
+              <div class="small muted">Play a sound when a notification arrives</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked onchange="toggleReminder(this, 'Sound')">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="row between" style="padding:12px 0;">
+            <div style="flex:1;margin-right:12px;">
+              <div style="font-size:14px; font-weight:700;">Vibration</div>
+              <div class="small muted">Vibrate along with notifications</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked onchange="toggleReminder(this, 'Vibration')">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-title">Timing</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="menu-row" onclick="toast('Reminder timing options aren\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Remind Me Before</div>
+            <span class="small muted">30 minutes ›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Quiet hours aren\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Quiet Hours</div>
+            <span class="small muted">10 PM–7 AM ›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen" id="s-settings">
+      <div class="topbar">
+        <div class="back-btn" onclick="showScreen('s-profile')">←</div>
+        <h2>Settings</h2>
+      </div>
+      <div class="pad-nonav" style="flex:1;">
+
+        <div class="section-title" style="margin-top:14px;">Preferences</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="menu-row" onclick="toast('Dark mode is coming in a future update')">
+            <div style="flex:1; font-size:14px; font-weight:700;">App Theme</div>
+            <span class="small muted">Light ›</span>
+          </div>
+          <div class="menu-row" onclick="toast('More languages are coming soon')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Language</div>
+            <span class="small muted">English ›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Default category options aren\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Default Category</div>
+            <span class="small muted">Study ›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Default priority options aren\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Default Priority</div>
+            <span class="small muted">Medium ›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Start of week options aren\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Start of Week</div>
+            <span class="small muted">Monday ›</span>
+          </div>
+        </div>
+
+        <div class="section-title">Data</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="menu-row" onclick="toast('Backup & sync isn\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Backup & Sync</div>
+            <span class="small muted">On ›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Exporting isn\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Export Tasks</div>
+            <span class="small muted">›</span>
+          </div>
+          <div class="menu-row" onclick="openConfirm('🧹','Clear completed tasks?','This removes every finished task from your list. This can\'t be undone.','Clear Tasks', clearCompletedTasks)">
+            <div style="flex:1; font-size:14px; font-weight:700; color:var(--coral-dark);">Clear Completed Tasks</div>
+            <span class="muted">›</span>
+          </div>
+        </div>
+
+        <div class="section-title">Account</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="menu-row" onclick="toast('Password changes aren\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Change Password</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="openConfirm('⚠️','Delete your account?','This permanently deletes your account and every task in it. This can\'t be undone.','Delete Account', deleteAccount)">
+            <div style="flex:1; font-size:14px; font-weight:700; color:var(--coral-dark);">Delete Account</div>
+            <span class="muted">›</span>
+          </div>
+        </div>
+
+        <div class="section-title">About</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="menu-row" onclick="toast('Opening Help & Support isn\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Help & Support</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Thanks for the love — rating isn\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Rate Daily Plan</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Opening Privacy Policy isn\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Privacy Policy</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" onclick="toast('Opening Terms of Service isn\'t available in this preview')">
+            <div style="flex:1; font-size:14px; font-weight:700;">Terms of Service</div>
+            <span class="muted">›</span>
+          </div>
+          <div class="menu-row" style="cursor:default;">
+            <div style="flex:1; font-size:14px; font-weight:700;">App Version</div>
+            <span class="small muted">1.0.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONFIRMATION MODALS -->
+  <div class="modal-overlay" id="modal-logout">
+    <div class="modal-sheet">
+      <div class="ic">🚪</div>
+      <div class="title">Log out of Daily Plan?</div>
+      <div class="desc">You'll need to sign back in to see your tasks and progress.</div>
+      <button class="btn btn-danger" onclick="confirmLogout()">Log Out</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="closeModal('modal-logout')">Cancel</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-delete">
+    <div class="modal-sheet">
+      <div class="ic">🗑️</div>
+      <div class="title">Delete this task?</div>
+      <div class="desc">This can't be undone. The task will be removed for good.</div>
+      <button class="btn btn-danger" onclick="confirmDeleteTask()">Delete Task</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="closeModal('modal-delete')">Cancel</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-confirm">
+    <div class="modal-sheet">
+      <div class="ic" id="confirm-ic">⚠️</div>
+      <div class="title" id="confirm-title">Are you sure?</div>
+      <div class="desc" id="confirm-desc">This action can't be undone.</div>
+      <button class="btn btn-danger" id="confirm-action-btn" onclick="runConfirmedAction()">Confirm</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="closeModal('modal-confirm')">Cancel</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✓ <span id="toast-text">Done</span></div>
+</div>
+
+<script>
+  // Data State — starts empty, like a brand-new install with no tasks yet
+  let tasks = [];
+
+  let currentCategoryFilter = 'All';
+  let selectedCategoryInput = 'Study';
+  let selectedPriorityInput = '🔴 High';
+  let selectedTaskId = null;
+  let pendingLoginRedirect = null;
+
+  // Current user — replaced with real values once the person logs in or signs up
+  let userName = 'Guest';
+  let userEmail = 'Not signed in yet';
+
+  function getInitials(name){
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if(parts.length === 0) return '?';
+    if(parts.length === 1) return parts[0].substring(0,2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  function updateUserDisplay(){
+    const firstName = userName.trim().split(/\s+/)[0] || 'there';
+    document.getElementById('greet-name').textContent = firstName;
+    document.getElementById('profile-name').textContent = userName;
+    document.getElementById('profile-email').textContent = userEmail;
+    document.getElementById('profile-avatar').textContent = getInitials(userName);
+  }
+
+  // Bottom Navigation setup
+  const NAV_ITEMS = [
+    {icon:'✅', label:'Tasks', target:'s-home'},
+    {icon:'🗂️', label:'Categories', target:'s-categories'},
+    {icon:'📊', label:'Stats', target:'s-stats'},
+    {icon:'👤', label:'Profile', target:'s-profile'},
+  ];
+
+  const navMounts = ['nav-home','nav-categories','nav-stats','nav-profile'];
+  navMounts.forEach(mountId=>{
+    const mount = document.getElementById(mountId);
+    if(!mount) return;
+    NAV_ITEMS.forEach(item=>{
+      const el = document.createElement('div');
+      el.className = 'navitem' + (mountId === 'nav-' + item.target.replace('s-','') ? ' active' : '');
+      el.innerHTML = `<span class="ic">${item.icon}</span><span>${item.label}</span>`;
+      el.onclick = ()=>showScreen(item.target);
+      mount.appendChild(el);
+    });
+  });
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id).scrollTop = 0;
+    renderTasks();
+  }
+
+  // ---------- Errors: field-level validation helpers ----------
+  function showFieldError(inputId, errorId){
+    document.getElementById(inputId).classList.add('field-error');
+    document.getElementById(errorId).classList.add('show');
+  }
+  function clearFieldError(inputId, errorId){
+    document.getElementById(inputId).classList.remove('field-error');
+    document.getElementById(errorId).classList.remove('show');
+  }
+
+  // ---------- Transitional text: Login ----------
+  function handleLogin(){
+    const email = document.getElementById('login-email');
+    const password = document.getElementById('login-password');
+    clearFieldError('login-email','err-login-email');
+    clearFieldError('login-password','err-login-password');
+
+    let hasError = false;
+    if(!email.value.trim()){ showFieldError('login-email','err-login-email'); hasError = true; }
+    if(!password.value.trim()){ showFieldError('login-password','err-login-password'); hasError = true; }
+    if(hasError) return;
+
+    userEmail = email.value.trim();
+    const localPart = userEmail.split('@')[0] || 'there';
+    userName = localPart.charAt(0).toUpperCase() + localPart.slice(1);
+    updateUserDisplay();
+
+    const btn = document.getElementById('btn-login');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Logging in...';
+
+    document.getElementById('loading-text').textContent = 'Signing you in...';
+    showScreen('s-loading');
+
+    setTimeout(()=>{
+      btn.disabled = false;
+      btn.innerHTML = 'Log In';
+      toast('Signed in successfully');
+      showScreen('s-home');
+    }, 1100);
+  }
+
+  function handleRegister(){
+    const name = document.getElementById('reg-name');
+    const email = document.getElementById('reg-email');
+    const password = document.getElementById('reg-password');
+    clearFieldError('reg-name','err-reg-name');
+    clearFieldError('reg-email','err-reg-email');
+    clearFieldError('reg-password','err-reg-password');
+
+    let hasError = false;
+    if(!name.value.trim()){ showFieldError('reg-name','err-reg-name'); hasError = true; }
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+    if(!emailValid){ showFieldError('reg-email','err-reg-email'); hasError = true; }
+    if(password.value.trim().length < 6){ showFieldError('reg-password','err-reg-password'); hasError = true; }
+    if(hasError) return;
+
+    userName = name.value.trim();
+    userEmail = email.value.trim();
+    updateUserDisplay();
+
+    const btn = document.getElementById('btn-register');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+    document.getElementById('loading-text').textContent = 'Setting up your account...';
+    showScreen('s-loading');
+
+    setTimeout(()=>{
+      btn.disabled = false;
+      btn.innerHTML = 'Sign Up';
+      toast('Account created — welcome!');
+      showScreen('s-home');
+    }, 1100);
+  }
+
+  // ---------- Empty states + task rendering ----------
+  function renderTasks() {
+    const container = document.getElementById('main-task-container');
+    container.innerHTML = '';
+
+    const filtered = tasks.filter(t => currentCategoryFilter === 'All' || t.category === currentCategoryFilter);
+
+    if (filtered.length === 0) {
+      const noTasksAtAll = tasks.length === 0;
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="ic">${noTasksAtAll ? '🗒️' : '🔍'}</div>
+          <div class="title">${noTasksAtAll ? 'No tasks yet' : 'Nothing here for now'}</div>
+          <div class="sub">${noTasksAtAll ? 'Add your first task and start sorting your day.' : `You're all caught up in ${currentCategoryFilter}. Try another category or add a new task.`}</div>
+          <button class="btn btn-marigold" onclick="showScreen('s-addtask')">Add a Task</button>
+        </div>`;
+    } else {
+      filtered.forEach(t => {
+        const item = document.createElement('div');
+        item.className = `task-item ${t.done ? 'done' : ''}`;
+        item.onclick = () => openTaskDetail(t.id);
+
+        let catClass = t.category.toLowerCase();
+
+        item.innerHTML = `
+          <div class="checkbox ${t.done ? 'checked' : ''}" onclick="event.stopPropagation(); toggleTaskDone(${t.id})">${t.done ? '✓' : ''}</div>
+          <div style="flex:1;">
+            <div class="task-title">${t.title}</div>
+            <div class="task-meta">
+              <span class="tag ${catClass}">${t.category}</span>
+              <span class="chip ${t.priority.includes('High') ? 'urgent' : 'plain'}">${t.priority}</span>
+              <span class="small muted">⏰ ${t.date}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Update Progress Ring & Counter
+    const completedCount = tasks.filter(t => t.done).length;
+    const totalCount = tasks.length;
+    const percent = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+
+    document.getElementById('progress-ring').style.background = `conic-gradient(var(--marigold) 0% ${percent}%, rgba(255,255,255,0.15) ${percent}% 100%)`;
+    document.getElementById('progress-text').textContent = `${percent}%`;
+    document.getElementById('progress-status').textContent = `${completedCount} of ${totalCount} tasks done`;
+
+    // Update Category Counters
+    document.getElementById('count-work').textContent = `${tasks.filter(t=>t.category==='Work' && !t.done).length} active tasks`;
+    document.getElementById('count-study').textContent = `${tasks.filter(t=>t.category==='Study' && !t.done).length} active tasks`;
+    document.getElementById('count-personal').textContent = `${tasks.filter(t=>t.category==='Personal' && !t.done).length} active tasks`;
+
+    // Update Statistics
+    document.getElementById('stat-completed').textContent = completedCount;
+    document.getElementById('stat-pending').textContent = totalCount - completedCount;
+  }
+
+  function filterTasks(cat, element) {
+    currentCategoryFilter = cat;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    if(element) element.classList.add('active');
+    renderTasks();
+  }
+
+  function openCategoryFilter(cat) {
+    currentCategoryFilter = cat;
+    const chips = document.querySelectorAll('.filter-chip');
+    chips.forEach(chip => {
+      if(chip.textContent.trim() === cat) chip.classList.add('active');
+      else chip.classList.remove('active');
+    });
+    showScreen('s-home');
+  }
+
+  // ---------- Add Task (Controls + Errors + Transitional text) ----------
+  function selectCategory(el, cat) {
+    document.querySelectorAll('.cat-pick').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedCategoryInput = cat;
+  }
+
+  function selectPriority(btn, prio) {
+    document.querySelectorAll('.priority-btn').forEach(b => b.classList.remove('sel-low','sel-mid','sel-high'));
+    if(prio.includes('Low')) btn.classList.add('sel-low');
+    else if(prio.includes('Medium')) btn.classList.add('sel-mid');
+    else btn.classList.add('sel-high');
+    selectedPriorityInput = prio;
+  }
+
+  function addNewTask() {
+    const titleInput = document.getElementById('input-task-title');
+    const descInput = document.getElementById('input-task-desc');
+    const dateInput = document.getElementById('input-task-date');
+
+    clearFieldError('input-task-title','err-task-title');
+    clearFieldError('input-task-date','err-task-date');
+
+    let hasError = false;
+    if(!titleInput.value.trim()){ showFieldError('input-task-title','err-task-title'); hasError = true; }
+    if(!dateInput.value){ showFieldError('input-task-date','err-task-date'); hasError = true; }
+    if(hasError){
+      toast('Please fix the highlighted fields', true);
+      return;
+    }
+
+    const btn = document.getElementById('btn-save-task');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Saving...';
+
+    setTimeout(()=>{
+      const newTask = {
+        id: Date.now(),
+        title: titleInput.value.trim(),
+        category: selectedCategoryInput,
+        priority: selectedPriorityInput,
+        date: dateInput.value ? new Date(dateInput.value).toLocaleDateString('en-US', {day:'numeric', month:'short'}) : 'Today',
+        desc: descInput.value.trim() || 'No notes added.',
+        done: false
+      };
+
+      tasks.unshift(newTask);
+      titleInput.value = '';
+      descInput.value = '';
+      btn.disabled = false;
+      btn.innerHTML = 'Save Task';
+
+      toast('Task added');
+      showScreen('s-home');
+    }, 600);
+  }
+
+  // ---------- Toggle & Task Detail ----------
+  function toggleTaskDone(id) {
+    const task = tasks.find(t => t.id === id);
+    if(task) {
+      task.done = !task.done;
+      renderTasks();
+    }
+  }
+
+  function openTaskDetail(id) {
+    const task = tasks.find(t => t.id === id);
+    if(!task) return;
+
+    selectedTaskId = id;
+    document.getElementById('detail-title').textContent = task.title;
+    document.getElementById('detail-tag').textContent = task.category;
+    document.getElementById('detail-tag').className = `tag ${task.category.toLowerCase()}`;
+    document.getElementById('detail-priority').textContent = `${task.priority} priority`;
+    document.getElementById('detail-date').textContent = `⏰ Due: ${task.date}`;
+    document.getElementById('detail-desc').textContent = task.desc;
+
+    const completeBtn = document.getElementById('btn-complete-task');
+    completeBtn.textContent = task.done ? 'Mark as Not Done' : 'Mark as Complete';
+
+    showScreen('s-taskdetail');
+  }
+
+  function completeCurrentTask() {
+    if(selectedTaskId) {
+      toggleTaskDone(selectedTaskId);
+      toast('Task updated');
+      showScreen('s-home');
+    }
+  }
+
+  // ---------- Confirmation messages: Delete & Logout ----------
+  function openModal(id){ document.getElementById(id).classList.add('show'); }
+  function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+  function askDeleteTask(){ openModal('modal-delete'); }
+  function confirmDeleteTask() {
+    if(selectedTaskId) {
+      tasks = tasks.filter(t => t.id !== selectedTaskId);
+      closeModal('modal-delete');
+      toast('Task deleted');
+      showScreen('s-home');
+    }
+  }
+
+  function askLogout(){ openModal('modal-logout'); }
+  function confirmLogout(){
+    closeModal('modal-logout');
+    toast('You have been logged out');
+    showScreen('s-splash');
+  }
+
+  // ---------- Generic confirmation modal (Settings destructive actions) ----------
+  let confirmCallback = null;
+  function openConfirm(icon, title, desc, actionLabel, callback){
+    document.getElementById('confirm-ic').textContent = icon;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-desc').textContent = desc;
+    document.getElementById('confirm-action-btn').textContent = actionLabel;
+    confirmCallback = callback;
+    openModal('modal-confirm');
+  }
+  function runConfirmedAction(){
+    closeModal('modal-confirm');
+    if(confirmCallback) confirmCallback();
+    confirmCallback = null;
+  }
+
+  function clearCompletedTasks(){
+    const removed = tasks.filter(t => t.done).length;
+    tasks = tasks.filter(t => !t.done);
+    renderTasks();
+    toast(removed > 0 ? 'Completed tasks cleared' : 'No completed tasks to clear');
+  }
+
+  function deleteAccount(){
+    toast('Your account has been deleted');
+    showScreen('s-splash');
+  }
+
+  // ---------- Notifications (toasts + toggle feedback) ----------
+  function toggleReminder(checkbox, label){
+    toast(checkbox.checked ? `${label} turned on` : `${label} turned off`);
+  }
+
+  let toastTimer;
+  function toast(msg, isError){
+    const t = document.getElementById('toast');
+    document.getElementById('toast-text').textContent = msg;
+    t.classList.toggle('toast-error', !!isError);
+    t.querySelector('span:first-child') ? null : null;
+    t.firstChild.textContent = isError ? '⚠' : '✓';
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  // Initial render
+  window.onload = function() {
+    renderTasks();
+    updateUserDisplay();
+  }
+</script>
+</body>
+</html>
